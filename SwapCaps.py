@@ -26,7 +26,21 @@ class scraper:
         name = name.replace("%27", "'")
         name = name.replace("+", " ")
         # Save it
-        req.urlretrieve(url, folder + "/" + name)
+        if self.fileExists(folder + "/" + name):
+            # Don't download it
+            print("File already exists: " + name)
+        else:
+            # Download it
+            print("Downloaded: " + name)
+            req.urlretrieve(url, folder + "/" + name)
+
+
+    def fileExists (self, path):
+        # If it doesn't exist it will be downloaded
+        if os.path.exists(path):
+            return True
+        else:
+            return False
 
     def createDirectory(self, name):
         # Current path + new folder name
@@ -65,7 +79,6 @@ class scraper:
                             img_list.append("https:" + img_link['href'])
                         else:
                             img_list.append(img_link['href'])
-            print(img_list)
             for img in img_list:
                 self.savePicture(folder, img)
         next_page = soup.find_all("a", {"class": "blog-pager-older-link"})
@@ -77,6 +90,7 @@ class scraper:
 
     def scrapSites(self):
         for site in self.sites:
+            print("Downloading pictures from: " + site["name"])
             # Create a folder named after the site, if it doesn't exist
             path = self.createDirectory(site["name"])
             self.scrapPage(site["url"], path)
