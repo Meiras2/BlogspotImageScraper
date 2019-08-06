@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import json
 import os
+import sys
 import re
 import threading
 import urllib.request as req
@@ -11,10 +12,24 @@ class scraper:
     ''' Scraper class to scrap all pictures from different blogs '''
 
     def __init__(self):
-        # Read lines from json file (TODO: Pass filename from commandline)
-        with open('sites.json') as file:
-            data = json.load(file)
-            self.sites = data["sites"]
+        # Read lines from file
+        if (len(sys.argv) == 2):
+            # If there's one additional argument, check if it's a txt or json file
+            filename = sys.argv[1]
+            # Check file extension
+            if (filename.lower().endswith(('.json'))):
+                # Parse JSON file
+                with open(filename) as file:
+                    data = json.load(file)
+                    self.sites = data["sites"]
+            else:
+                # Throw error
+                print("Error")
+        else:
+            # Go with default
+            with open('sites.json') as file:
+                data = json.load(file)
+                self.sites = data["sites"]
 
     def savePicture(self, folder, url):
         a = urlparse(url)
